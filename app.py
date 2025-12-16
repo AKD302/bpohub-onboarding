@@ -250,7 +250,10 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 # -------------------- HELPERS ---------------------
 def checkbox_group(label: str, options: list[str], key_prefix: str):
-    """Render label + group of checkboxes; returns selected options."""
+    """
+    Render label + checkbox group and store selection into
+    st.session_state[f"{key_prefix}_selected"].
+    """
     st.markdown(f'<div class="question-label">{label}</div>', unsafe_allow_html=True)
     selected = []
     st.markdown('<div class="checkbox-wrap">', unsafe_allow_html=True)
@@ -258,21 +261,20 @@ def checkbox_group(label: str, options: list[str], key_prefix: str):
         if st.checkbox(opt, key=f"{key_prefix}_{i}"):
             selected.append(opt)
     st.markdown("</div>", unsafe_allow_html=True)
-    return selected
+    # Store the full list for use on the Review step
+    st.session_state[f"{key_prefix}_selected"] = selected
 
-def get_selected(prefix: str, options: list[str]):
-    """Read selected options for a checkbox group from session_state."""
-    selected = []
-    for i, opt in enumerate(options):
-        if st.session_state.get(f"{prefix}_{i}", False):
-            selected.append(opt)
-    return selected
+
+def get_list(prefix: str):
+    """Read the stored selected list for a question."""
+    return st.session_state.get(f"{prefix}_selected", [])
+
 
 # -------------------- MULTI-STEP STATE ---------------------------
 if "step" not in st.session_state:
     st.session_state.step = 1
 
-TOTAL_STEPS = 6  # now includes Review step
+TOTAL_STEPS = 6  # includes Review step
 
 def go_next():
     if st.session_state.step < TOTAL_STEPS:
@@ -327,7 +329,7 @@ with st.container():
     # -------------------- FORM PER STEP ---------------------------
     with st.form(key=f"step_form_{st.session_state.step}"):
 
-        # ---------- STEP 1: BASIC INFO ----------
+        # ---------- STEP 1 ----------
         if st.session_state.step == 1:
             st.markdown('<div class="section-title">Step 1 · Basic Business Information</div>', unsafe_allow_html=True)
             st.markdown(
@@ -356,7 +358,7 @@ with st.container():
                 key_prefix="acct_systems",
             )
 
-        # ---------- STEP 2: OVERVIEW ----------
+        # ---------- STEP 2 ----------
         elif st.session_state.step == 2:
             st.markdown('<div class="section-title">Step 2 · High-Level Accounting & Operations</div>', unsafe_allow_html=True)
             st.markdown(
@@ -394,7 +396,7 @@ with st.container():
                 key_prefix="close_time",
             )
 
-        # ---------- STEP 3: PROCESSES ----------
+        # ---------- STEP 3 ----------
         elif st.session_state.step == 3:
             st.markdown('<div class="section-title">Step 3 · Processes, Controls & Compliance</div>', unsafe_allow_html=True)
             st.markdown(
@@ -438,7 +440,7 @@ with st.container():
                 key_prefix="reporting_confidence",
             )
 
-        # ---------- STEP 4: SCALABILITY ----------
+        # ---------- STEP 4 ----------
         elif st.session_state.step == 4:
             st.markdown('<div class="section-title">Step 4 · Scalability & Strategic Needs</div>', unsafe_allow_html=True)
             st.markdown(
@@ -464,7 +466,7 @@ with st.container():
                 key_prefix="urgency",
             )
 
-        # ---------- STEP 5: ADVANCED ----------
+        # ---------- STEP 5 ----------
         elif st.session_state.step == 5:
             st.markdown('<div class="section-title">Step 5 · Advanced Diagnostic & Additional Context</div>', unsafe_allow_html=True)
             st.markdown(
@@ -519,70 +521,70 @@ with st.container():
             with col_a:
                 st.subheader("Firm Profile & Systems")
                 st.write("**Firm size:**")
-                st.write(", ".join(get_selected("firm_size", OPTIONS["firm_size"])) or "Not specified")
+                st.write(", ".join(get_list("firm_size")) or "Not specified")
 
                 st.write("**Accounting systems:**")
-                st.write(", ".join(get_selected("acct_systems", OPTIONS["acct_systems"])) or "Not specified")
+                st.write(", ".join(get_list("acct_systems")) or "Not specified")
 
                 st.subheader("Challenges & Status")
                 st.write("**Key challenges:**")
-                st.write(", ".join(get_selected("challenges", OPTIONS["challenges"])) or "Not specified")
+                st.write(", ".join(get_list("challenges")) or "Not specified")
 
                 st.write("**Cost pressure:**")
-                st.write(", ".join(get_selected("cost_pressure", OPTIONS["cost_pressure"])) or "Not specified")
+                st.write(", ".join(get_list("cost_pressure")) or "Not specified")
 
                 st.write("**Books & reconciliations status:**")
-                st.write(", ".join(get_selected("books_status", OPTIONS["books_status"])) or "Not specified")
+                st.write(", ".join(get_list("books_status")) or "Not specified")
 
                 st.write("**Busy season impact:**")
-                st.write(", ".join(get_selected("busy_season", OPTIONS["busy_season"])) or "Not specified")
+                st.write(", ".join(get_list("busy_season")) or "Not specified")
 
                 st.write("**Month-end close duration:**")
-                st.write(", ".join(get_selected("close_time", OPTIONS["close_time"])) or "Not specified")
+                st.write(", ".join(get_list("close_time")) or "Not specified")
 
             with col_b:
                 st.subheader("Processes & Controls")
                 st.write("**Delay / rework areas:**")
-                st.write(", ".join(get_selected("delay_areas", OPTIONS["delay_areas"])) or "Not specified")
+                st.write(", ".join(get_list("delay_areas")) or "Not specified")
 
                 st.write("**Capacity for audits & compliance:**")
-                st.write(", ".join(get_selected("capacity", OPTIONS["capacity"])) or "Not specified")
+                st.write(", ".join(get_list("capacity")) or "Not specified")
 
                 st.write("**SOP / standardization needs:**")
-                st.write(", ".join(get_selected("sop_needs", OPTIONS["sop_needs"])) or "Not specified")
+                st.write(", ".join(get_list("sop_needs")) or "Not specified")
 
                 st.write("**ERP / system migration status:**")
-                st.write(", ".join(get_selected("erp_status", OPTIONS["erp_status"])) or "Not specified")
+                st.write(", ".join(get_list("erp_status")) or "Not specified")
 
                 st.write("**Audit & compliance challenges:**")
-                st.write(", ".join(get_selected("compliance_issues", OPTIONS["compliance_issues"])) or "Not specified")
+                st.write(", ".join(get_list("compliance_issues")) or "Not specified")
 
                 st.write("**Reporting confidence:**")
-                st.write(", ".join(get_selected("reporting_confidence", OPTIONS["reporting_confidence"])) or "Not specified")
+                st.write(", ".join(get_list("reporting_confidence")) or "Not specified")
 
             st.markdown("---")
 
             st.subheader("Scalability & Strategic")
             st.write("**Scaling constraints:**")
-            st.write(", ".join(get_selected("constraint", OPTIONS["constraint"])) or "Not specified")
+            st.write(", ".join(get_list("constraint")) or "Not specified")
 
             st.write("**Growth plan (12 months):**")
-            st.write(", ".join(get_selected("growth_plan", OPTIONS["growth_plan"])) or "Not specified")
+            st.write(", ".join(get_list("growth_plan")) or "Not specified")
 
             st.write("**Urgency for support:**")
-            st.write(", ".join(get_selected("urgency", OPTIONS["urgency"])) or "Not specified")
+            st.write(", ".join(get_list("urgency")) or "Not specified")
 
             st.markdown("---")
 
             st.subheader("Advanced Signals")
             st.write("**Automation targets:**")
-            st.write(", ".join(get_selected("automation_targets", OPTIONS["automation_targets"])) or "Not specified")
+            st.write(", ".join(get_list("automation_targets")) or "Not specified")
 
             st.write("**Risk areas:**")
-            st.write(", ".join(get_selected("risk_areas", OPTIONS["risk_areas"])) or "Not specified")
+            st.write(", ".join(get_list("risk_areas")) or "Not specified")
 
             st.write("**Support type sought:**")
-            st.write(", ".join(get_selected("support_type", OPTIONS["support_type"])) or "Not specified")
+            st.write(", ".join(get_list("support_type")) or "Not specified")
 
             st.write("**Additional notes:**")
             st.write(st.session_state.get("notes", "") or "_None provided_")
