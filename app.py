@@ -261,12 +261,11 @@ def checkbox_group(label: str, options: list[str], key_prefix: str):
         if st.checkbox(opt, key=f"{key_prefix}_{i}"):
             selected.append(opt)
     st.markdown("</div>", unsafe_allow_html=True)
-    # Store the full list for use on the Review step
     st.session_state[f"{key_prefix}_selected"] = selected
 
 
 def get_list(prefix: str):
-    """Read the stored selected list for a question."""
+    """Read stored selected list for a question."""
     return st.session_state.get(f"{prefix}_selected", [])
 
 
@@ -326,287 +325,287 @@ with st.container():
 
     st.progress(st.session_state.step / TOTAL_STEPS)
 
-    # -------------------- FORM PER STEP ---------------------------
-    with st.form(key=f"step_form_{st.session_state.step}"):
+    step = st.session_state.step
 
-        # ---------- STEP 1 ----------
-        if st.session_state.step == 1:
-            st.markdown('<div class="section-title">Step 1 · Basic Business Information</div>', unsafe_allow_html=True)
-            st.markdown(
-                '<div class="section-caption">Tell us who you are so we can keep our proposal relevant to your firm.</div>',
-                unsafe_allow_html=True,
-            )
+    # -------------------- STEP CONTENT ---------------------------
 
-            c1, c2 = st.columns(2)
-            with c1:
-                st.text_input("Your Name", key="name")
-                st.text_input("Email Address", key="email")
-                st.text_input("Country of Operation", key="country")
-            with c2:
-                st.text_input("Company / Firm Name", key="company")
-                st.text_input("Primary Industry / Client Sector", key="sector")
+    # ---------- STEP 1 ----------
+    if step == 1:
+        st.markdown('<div class="section-title">Step 1 · Basic Business Information</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-caption">Tell us who you are so we can keep our proposal relevant to your firm.</div>',
+            unsafe_allow_html=True,
+        )
 
-            checkbox_group(
-                "Size of your firm (select all that apply if you operate multiple entities):",
-                OPTIONS["firm_size"],
-                key_prefix="firm_size",
-            )
+        c1, c2 = st.columns(2)
+        with c1:
+            st.text_input("Your Name", key="name")
+            st.text_input("Email Address", key="email")
+            st.text_input("Country of Operation", key="country")
+        with c2:
+            st.text_input("Company / Firm Name", key="company")
+            st.text_input("Primary Industry / Client Sector", key="sector")
 
-            checkbox_group(
-                "Which accounting systems do you currently use?",
-                OPTIONS["acct_systems"],
-                key_prefix="acct_systems",
-            )
+        checkbox_group(
+            "Size of your firm (select all that apply if you operate multiple entities):",
+            OPTIONS["firm_size"],
+            key_prefix="firm_size",
+        )
 
-        # ---------- STEP 2 ----------
-        elif st.session_state.step == 2:
-            st.markdown('<div class="section-title">Step 2 · High-Level Accounting & Operations</div>', unsafe_allow_html=True)
-            st.markdown(
-                '<div class="section-caption">High-level picture of how your finance function is running today.</div>',
-                unsafe_allow_html=True,
-            )
+        checkbox_group(
+            "Which accounting systems do you currently use?",
+            OPTIONS["acct_systems"],
+            key_prefix="acct_systems",
+        )
 
-            checkbox_group(
-                "What are the biggest challenges you currently face in your finance function?",
-                OPTIONS["challenges"],
-                key_prefix="challenges",
-            )
+    # ---------- STEP 2 ----------
+    elif step == 2:
+        st.markdown('<div class="section-title">Step 2 · High-Level Accounting & Operations</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-caption">High-level picture of how your finance function is running today.</div>',
+            unsafe_allow_html=True,
+        )
 
-            checkbox_group(
-                "Are your current bookkeeping and accounting costs higher than expected?",
-                OPTIONS["cost_pressure"],
-                key_prefix="cost_pressure",
-            )
+        checkbox_group(
+            "What are the biggest challenges you currently face in your finance function?",
+            OPTIONS["challenges"],
+            key_prefix="challenges",
+        )
 
-            checkbox_group(
-                "How current are your books and reconciliations? (select all that apply across different entities)",
-                OPTIONS["books_status"],
-                key_prefix="books_status",
-            )
+        checkbox_group(
+            "Are your current bookkeeping and accounting costs higher than expected?",
+            OPTIONS["cost_pressure"],
+            key_prefix="cost_pressure",
+        )
 
-            checkbox_group(
-                "Do you experience seasonal workload spikes (e.g., tax season)?",
-                OPTIONS["busy_season"],
-                key_prefix="busy_season",
-            )
+        checkbox_group(
+            "How current are your books and reconciliations? (select all that apply across different entities)",
+            OPTIONS["books_status"],
+            key_prefix="books_status",
+        )
 
-            checkbox_group(
-                "How long does your month-end close usually take across your entities?",
-                OPTIONS["close_time"],
-                key_prefix="close_time",
-            )
+        checkbox_group(
+            "Do you experience seasonal workload spikes (e.g., tax season)?",
+            OPTIONS["busy_season"],
+            key_prefix="busy_season",
+        )
 
-        # ---------- STEP 3 ----------
-        elif st.session_state.step == 3:
-            st.markdown('<div class="section-title">Step 3 · Processes, Controls & Compliance</div>', unsafe_allow_html=True)
-            st.markdown(
-                '<div class="section-caption">Help us identify where processes slow you down or increase risk.</div>',
-                unsafe_allow_html=True,
-            )
+        checkbox_group(
+            "How long does your month-end close usually take across your entities?",
+            OPTIONS["close_time"],
+            key_prefix="close_time",
+        )
 
-            checkbox_group(
-                "Which areas currently cause the most delays or rework?",
-                OPTIONS["delay_areas"],
-                key_prefix="delay_areas",
-            )
+    # ---------- STEP 3 ----------
+    elif step == 3:
+        st.markdown('<div class="section-title">Step 3 · Processes, Controls & Compliance</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-caption">Help us identify where processes slow you down or increase risk.</div>',
+            unsafe_allow_html=True,
+        )
 
-            checkbox_group(
-                "Do you have sufficient internal capacity for audits, tax deadlines, and regulatory compliance?",
-                OPTIONS["capacity"],
-                key_prefix="capacity",
-            )
+        checkbox_group(
+            "Which areas currently cause the most delays or rework?",
+            OPTIONS["delay_areas"],
+            key_prefix="delay_areas",
+        )
 
-            checkbox_group(
-                "Which processes require SOPs or standardization?",
-                OPTIONS["sop_needs"],
-                key_prefix="sop_needs",
-            )
+        checkbox_group(
+            "Do you have sufficient internal capacity for audits, tax deadlines, and regulatory compliance?",
+            OPTIONS["capacity"],
+            key_prefix="capacity",
+        )
 
-            checkbox_group(
-                "Are you planning or currently undergoing an ERP or accounting system migration?",
-                OPTIONS["erp_status"],
-                key_prefix="erp_status",
-            )
+        checkbox_group(
+            "Which processes require SOPs or standardization?",
+            OPTIONS["sop_needs"],
+            key_prefix="sop_needs",
+        )
 
-            checkbox_group(
-                "Do you face challenges with audit readiness, compliance, or internal controls?",
-                OPTIONS["compliance_issues"],
-                key_prefix="compliance_issues",
-            )
+        checkbox_group(
+            "Are you planning or currently undergoing an ERP or accounting system migration?",
+            OPTIONS["erp_status"],
+            key_prefix="erp_status",
+        )
 
-            checkbox_group(
-                "How confident are you in your reporting accuracy, dashboards, and analytics?",
-                OPTIONS["reporting_confidence"],
-                key_prefix="reporting_confidence",
-            )
+        checkbox_group(
+            "Do you face challenges with audit readiness, compliance, or internal controls?",
+            OPTIONS["compliance_issues"],
+            key_prefix="compliance_issues",
+        )
 
-        # ---------- STEP 4 ----------
-        elif st.session_state.step == 4:
-            st.markdown('<div class="section-title">Step 4 · Scalability & Strategic Needs</div>', unsafe_allow_html=True)
-            st.markdown(
-                '<div class="section-caption">This helps us align the engagement model with your growth plans.</div>',
-                unsafe_allow_html=True,
-            )
+        checkbox_group(
+            "How confident are you in your reporting accuracy, dashboards, and analytics?",
+            OPTIONS["reporting_confidence"],
+            key_prefix="reporting_confidence",
+        )
 
-            checkbox_group(
-                "What is the biggest constraint limiting your ability to scale?",
-                OPTIONS["constraint"],
-                key_prefix="constraint",
-            )
+    # ---------- STEP 4 ----------
+    elif step == 4:
+        st.markdown('<div class="section-title">Step 4 · Scalability & Strategic Needs</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-caption">This helps us align the engagement model with your growth plans.</div>',
+            unsafe_allow_html=True,
+        )
 
-            checkbox_group(
-                "What are your growth plans for the next 12 months?",
-                OPTIONS["growth_plan"],
-                key_prefix="growth_plan",
-            )
+        checkbox_group(
+            "What is the biggest constraint limiting your ability to scale?",
+            OPTIONS["constraint"],
+            key_prefix="constraint",
+        )
 
-            checkbox_group(
-                "How urgent is your need for additional finance or back-office support?",
-                OPTIONS["urgency"],
-                key_prefix="urgency",
-            )
+        checkbox_group(
+            "What are your growth plans for the next 12 months?",
+            OPTIONS["growth_plan"],
+            key_prefix="growth_plan",
+        )
 
-        # ---------- STEP 5 ----------
-        elif st.session_state.step == 5:
-            st.markdown('<div class="section-title">Step 5 · Advanced Diagnostic & Additional Context</div>', unsafe_allow_html=True)
-            st.markdown(
-                '<div class="section-caption">Final details so we can come prepared to the first conversation.</div>',
-                unsafe_allow_html=True,
-            )
+        checkbox_group(
+            "How urgent is your need for additional finance or back-office support?",
+            OPTIONS["urgency"],
+            key_prefix="urgency",
+        )
 
-            checkbox_group(
-                "Which processes would benefit most from automation or tech enablement?",
-                OPTIONS["automation_targets"],
-                key_prefix="automation_targets",
-            )
+    # ---------- STEP 5 ----------
+    elif step == 5:
+        st.markdown('<div class="section-title">Step 5 · Advanced Diagnostic & Additional Context</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-caption">Final details so we can come prepared to the first conversation.</div>',
+            unsafe_allow_html=True,
+        )
 
-            checkbox_group(
-                "Where do you see the highest risk of errors or compliance issues?",
-                OPTIONS["risk_areas"],
-                key_prefix="risk_areas",
-            )
+        checkbox_group(
+            "Which processes would benefit most from automation or tech enablement?",
+            OPTIONS["automation_targets"],
+            key_prefix="automation_targets",
+        )
 
-            checkbox_group(
-                "What type of support are you seeking from BPOHub?",
-                OPTIONS["support_type"],
-                key_prefix="support_type",
-            )
+        checkbox_group(
+            "Where do you see the highest risk of errors or compliance issues?",
+            OPTIONS["risk_areas"],
+            key_prefix="risk_areas",
+        )
 
-            st.text_area(
-                "Please share any additional context, pain points, or goals you want us to consider.",
-                height=150,
-                key="notes",
-            )
+        checkbox_group(
+            "What type of support are you seeking from BPOHub?",
+            OPTIONS["support_type"],
+            key_prefix="support_type",
+        )
 
-        # ---------- STEP 6: REVIEW ----------
-        elif st.session_state.step == 6:
-            st.markdown('<div class="section-title">Step 6 · Review & Confirm</div>', unsafe_allow_html=True)
-            st.markdown(
-                '<div class="section-caption">Please review your answers below. You can go back and edit anything before submitting.</div>',
-                unsafe_allow_html=True,
-            )
+        st.text_area(
+            "Please share any additional context, pain points, or goals you want us to consider.",
+            height=150,
+            key="notes",
+        )
 
-            # Basic info
-            st.subheader("Basic Information")
-            st.write(f"**Name:** {st.session_state.get('name', '')}")
-            st.write(f"**Email:** {st.session_state.get('email', '')}")
-            st.write(f"**Company:** {st.session_state.get('company', '')}")
-            st.write(f"**Country:** {st.session_state.get('country', '')}")
-            st.write(f"**Sector:** {st.session_state.get('sector', '')}")
+    # ---------- STEP 6: REVIEW ----------
+    elif step == 6:
+        st.markdown('<div class="section-title">Step 6 · Review & Confirm</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-caption">Please review your answers below. You can go back and edit anything before submitting.</div>',
+            unsafe_allow_html=True,
+        )
 
-            st.markdown("---")
+        st.subheader("Basic Information")
+        st.write(f"**Name:** {st.session_state.get('name', '')}")
+        st.write(f"**Email:** {st.session_state.get('email', '')}")
+        st.write(f"**Company:** {st.session_state.get('company', '')}")
+        st.write(f"**Country:** {st.session_state.get('country', '')}")
+        st.write(f"**Sector:** {st.session_state.get('sector', '')}")
 
-            col_a, col_b = st.columns(2)
+        st.markdown("---")
 
-            with col_a:
-                st.subheader("Firm Profile & Systems")
-                st.write("**Firm size:**")
-                st.write(", ".join(get_list("firm_size")) or "Not specified")
+        col_a, col_b = st.columns(2)
 
-                st.write("**Accounting systems:**")
-                st.write(", ".join(get_list("acct_systems")) or "Not specified")
+        with col_a:
+            st.subheader("Firm Profile & Systems")
+            st.write("**Firm size:**")
+            st.write(", ".join(get_list("firm_size")) or "Not specified")
 
-                st.subheader("Challenges & Status")
-                st.write("**Key challenges:**")
-                st.write(", ".join(get_list("challenges")) or "Not specified")
+            st.write("**Accounting systems:**")
+            st.write(", ".join(get_list("acct_systems")) or "Not specified")
 
-                st.write("**Cost pressure:**")
-                st.write(", ".join(get_list("cost_pressure")) or "Not specified")
+            st.subheader("Challenges & Status")
+            st.write("**Key challenges:**")
+            st.write(", ".join(get_list("challenges")) or "Not specified")
 
-                st.write("**Books & reconciliations status:**")
-                st.write(", ".join(get_list("books_status")) or "Not specified")
+            st.write("**Cost pressure:**")
+            st.write(", ".join(get_list("cost_pressure")) or "Not specified")
 
-                st.write("**Busy season impact:**")
-                st.write(", ".join(get_list("busy_season")) or "Not specified")
+            st.write("**Books & reconciliations status:**")
+            st.write(", ".join(get_list("books_status")) or "Not specified")
 
-                st.write("**Month-end close duration:**")
-                st.write(", ".join(get_list("close_time")) or "Not specified")
+            st.write("**Busy season impact:**")
+            st.write(", ".join(get_list("busy_season")) or "Not specified")
 
-            with col_b:
-                st.subheader("Processes & Controls")
-                st.write("**Delay / rework areas:**")
-                st.write(", ".join(get_list("delay_areas")) or "Not specified")
+            st.write("**Month-end close duration:**")
+            st.write(", ".join(get_list("close_time")) or "Not specified")
 
-                st.write("**Capacity for audits & compliance:**")
-                st.write(", ".join(get_list("capacity")) or "Not specified")
+        with col_b:
+            st.subheader("Processes & Controls")
+            st.write("**Delay / rework areas:**")
+            st.write(", ".join(get_list("delay_areas")) or "Not specified")
 
-                st.write("**SOP / standardization needs:**")
-                st.write(", ".join(get_list("sop_needs")) or "Not specified")
+            st.write("**Capacity for audits & compliance:**")
+            st.write(", ".join(get_list("capacity")) or "Not specified")
 
-                st.write("**ERP / system migration status:**")
-                st.write(", ".join(get_list("erp_status")) or "Not specified")
+            st.write("**SOP / standardization needs:**")
+            st.write(", ".join(get_list("sop_needs")) or "Not specified")
 
-                st.write("**Audit & compliance challenges:**")
-                st.write(", ".join(get_list("compliance_issues")) or "Not specified")
+            st.write("**ERP / system migration status:**")
+            st.write(", ".join(get_list("erp_status")) or "Not specified")
 
-                st.write("**Reporting confidence:**")
-                st.write(", ".join(get_list("reporting_confidence")) or "Not specified")
+            st.write("**Audit & compliance challenges:**")
+            st.write(", ".join(get_list("compliance_issues")) or "Not specified")
 
-            st.markdown("---")
+            st.write("**Reporting confidence:**")
+            st.write(", ".join(get_list("reporting_confidence")) or "Not specified")
 
-            st.subheader("Scalability & Strategic")
-            st.write("**Scaling constraints:**")
-            st.write(", ".join(get_list("constraint")) or "Not specified")
+        st.markdown("---")
 
-            st.write("**Growth plan (12 months):**")
-            st.write(", ".join(get_list("growth_plan")) or "Not specified")
+        st.subheader("Scalability & Strategic")
+        st.write("**Scaling constraints:**")
+        st.write(", ".join(get_list("constraint")) or "Not specified")
 
-            st.write("**Urgency for support:**")
-            st.write(", ".join(get_list("urgency")) or "Not specified")
+        st.write("**Growth plan (12 months):**")
+        st.write(", ".join(get_list("growth_plan")) or "Not specified")
 
-            st.markdown("---")
+        st.write("**Urgency for support:**")
+        st.write(", ".join(get_list("urgency")) or "Not specified")
 
-            st.subheader("Advanced Signals")
-            st.write("**Automation targets:**")
-            st.write(", ".join(get_list("automation_targets")) or "Not specified")
+        st.markdown("---")
 
-            st.write("**Risk areas:**")
-            st.write(", ".join(get_list("risk_areas")) or "Not specified")
+        st.subheader("Advanced Signals")
+        st.write("**Automation targets:**")
+        st.write(", ".join(get_list("automation_targets")) or "Not specified")
 
-            st.write("**Support type sought:**")
-            st.write(", ".join(get_list("support_type")) or "Not specified")
+        st.write("**Risk areas:**")
+        st.write(", ".join(get_list("risk_areas")) or "Not specified")
 
-            st.write("**Additional notes:**")
-            st.write(st.session_state.get("notes", "") or "_None provided_")
+        st.write("**Support type sought:**")
+        st.write(", ".join(get_list("support_type")) or "Not specified")
 
-        # ---------- NAV BUTTONS ----------
-        col_prev, col_next, col_spacer = st.columns([1, 1, 4])
+        st.write("**Additional notes:**")
+        st.write(st.session_state.get("notes", "") or "_None provided_")
 
-        with col_prev:
-            if st.session_state.step > 1:
-                prev_clicked = st.form_submit_button("⬅ Previous")
-                if prev_clicked:
-                    go_prev()
+    # -------------------- NAV BUTTONS ---------------------------
+    col_prev, col_next, col_spacer = st.columns([1, 1, 4])
 
-        with col_next:
-            if st.session_state.step < TOTAL_STEPS:
-                next_clicked = st.form_submit_button("Next ➜")
-                if next_clicked:
-                    go_next()
-            else:
-                submit_clicked = st.form_submit_button("✅ Submit")
-                if submit_clicked:
-                    st.success("Thank you! Your responses have been submitted. A BPOHub consultant will review them and get back to you.")
-                    st.balloons()
+    with col_prev:
+        if step > 1:
+            if st.button("⬅ Previous"):
+                go_prev()
+
+    with col_next:
+        if step < TOTAL_STEPS:
+            if st.button("Next ➜"):
+                go_next()
+        else:
+            if st.button("✅ Submit"):
+                st.success(
+                    "Thank you! Your responses have been submitted. "
+                    "A BPOHub consultant will review them and get back to you."
+                )
+                st.balloons()
 
     st.markdown("</div></div>", unsafe_allow_html=True)
