@@ -194,6 +194,26 @@ body {
     font-size: 12px;
     color: #6b7280;
 }
+.step-pills {
+    display: flex;
+    gap: 6px;
+    font-size: 11px;
+    margin: 8px 0 4px 0;
+    flex-wrap: wrap;
+}
+.step-pill {
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #6b7280;
+}
+.step-pill.active {
+    border-color: rgba(59, 130, 246, 0.6);
+    background: rgba(37, 99, 235, 0.07);
+    color: #1d4ed8;
+    font-weight: 600;
+}
 .section-title {
     font-size: 16px;
     font-weight: 600;
@@ -230,7 +250,7 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 # -------------------- HELPERS ------------------------
 def checkbox_group(label: str, options: list[str], key_prefix: str):
-    """Render a labelled group of checkboxes."""
+    """Render a labelled group of checkboxes (multi-select)."""
     st.markdown(f'<div class="question-label">{label}</div>', unsafe_allow_html=True)
     st.markdown('<div class="checkbox-wrap">', unsafe_allow_html=True)
     for i, opt in enumerate(options):
@@ -245,12 +265,22 @@ def get_selected(prefix: str, options: list[str]):
             selected.append(opt)
     return selected
 
+# -------------------- STEP STATE ---------------------
+if "step" not in st.session_state:
+    st.session_state.step = 1
+
+TOTAL_STEPS = 6
+
+def set_step(new_step: int):
+    if 1 <= new_step <= TOTAL_STEPS:
+        st.session_state.step = new_step
+
 # -------------------- MAIN LAYOUT --------------------
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 st.markdown('<div class="app-card">', unsafe_allow_html=True)
 
 # Header
-col_header_left, col_header_right = st.columns([3, 1.2])
+col_header_left, col_header_right = st.columns([3, 1.6])
 with col_header_left:
     st.markdown(
         """
@@ -260,7 +290,7 @@ with col_header_left:
             <div>
               <div class="brand-text-title">BPOHub – Client Diagnostic</div>
               <div class="brand-text-sub">
-                A guided intake form so we understand your finance & accounting needs before our call.
+                A guided intake so we understand your finance & accounting needs before our call.
               </div>
             </div>
           </div>
@@ -270,22 +300,29 @@ with col_header_left:
     )
 
 with col_header_right:
-    st.caption("Fill each section in the tabs below. The last tab shows a full summary.")
-
-# Tabs for each “step”
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
-    [
+    pill_html = '<div class="step-pills">'
+    step_names = [
         "1 · Profile",
         "2 · Overview",
         "3 · Processes",
         "4 · Scalability",
         "5 · Advanced",
-        "6 · Review & Confirm",
+        "6 · Review",
     ]
-)
+    for idx, name in enumerate(step_names, start=1):
+        cls = "step-pill active" if st.session_state.step == idx else "step-pill"
+        pill_html += f'<div class="{cls}">{name}</div>'
+    pill_html += "</div>"
+    st.markdown(pill_html, unsafe_allow_html=True)
 
-# -------------------- TAB 1: PROFILE -----------------
-with tab1:
+st.progress(st.session_state.step / TOTAL_STEPS)
+
+step = st.session_state.step
+
+# -------------------- STEP CONTENT -------------------
+
+# STEP 1 – PROFILE
+if step == 1:
     st.markdown('<div class="section-title">Step 1 · Basic Business Information</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-caption">Tell us who you are so we can tailor our proposal to your firm.</div>',
@@ -313,8 +350,8 @@ with tab1:
         key_prefix="acct_systems",
     )
 
-# -------------------- TAB 2: OVERVIEW ----------------
-with tab2:
+# STEP 2 – OVERVIEW
+elif step == 2:
     st.markdown('<div class="section-title">Step 2 · High-Level Accounting & Operations</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-caption">A quick snapshot of how your finance function is running today.</div>',
@@ -351,8 +388,8 @@ with tab2:
         key_prefix="close_time",
     )
 
-# -------------------- TAB 3: PROCESSES ---------------
-with tab3:
+# STEP 3 – PROCESSES
+elif step == 3:
     st.markdown('<div class="section-title">Step 3 · Processes, Controls & Compliance</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-caption">Help us identify where processes slow you down or create risk.</div>',
@@ -395,8 +432,8 @@ with tab3:
         key_prefix="reporting_confidence",
     )
 
-# -------------------- TAB 4: SCALABILITY -------------
-with tab4:
+# STEP 4 – SCALABILITY
+elif step == 4:
     st.markdown('<div class="section-title">Step 4 · Scalability & Strategic Needs</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-caption">This helps us match the engagement model with your growth plans.</div>',
@@ -421,8 +458,8 @@ with tab4:
         key_prefix="urgency",
     )
 
-# -------------------- TAB 5: ADVANCED ----------------
-with tab5:
+# STEP 5 – ADVANCED
+elif step == 5:
     st.markdown('<div class="section-title">Step 5 · Advanced Diagnostic & Additional Context</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-caption">Final details so we can come prepared to our first working session.</div>',
@@ -453,11 +490,11 @@ with tab5:
         key="notes",
     )
 
-# -------------------- TAB 6: REVIEW ------------------
-with tab6:
+# STEP 6 – REVIEW
+elif step == 6:
     st.markdown('<div class="section-title">Step 6 · Review & Confirm</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-caption">Review all answers below. You can go back to any tab to edit.</div>',
+        '<div class="section-caption">Review all answers below. You can go back to previous steps to edit.</div>',
         unsafe_allow_html=True,
     )
 
@@ -545,7 +582,31 @@ with tab6:
 
     st.markdown("---")
     if st.button("✅ Submit form"):
-        st.success("Thank you! Your responses have been submitted. A BPOHub consultant will review them and get back to you.")
+        st.success(
+            "Thank you! Your responses have been submitted. "
+            "A BPOHub consultant will review them and get back to you."
+        )
         st.balloons()
+
+# -------------------- NAV BUTTONS --------------------
+st.markdown("---")
+col_prev, col_next, _ = st.columns([1, 1, 6])
+
+with col_prev:
+    st.button(
+        "⬅ Previous",
+        disabled=(step == 1),
+        on_click=set_step,
+        args=(step - 1,),
+    )
+
+with col_next:
+    label = "Next ➜" if step < TOTAL_STEPS else "Review ➜"
+    st.button(
+        label,
+        disabled=(step == TOTAL_STEPS),
+        on_click=set_step,
+        args=(step + 1,),
+    )
 
 st.markdown("</div></div>", unsafe_allow_html=True)
